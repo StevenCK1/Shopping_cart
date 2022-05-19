@@ -43,7 +43,7 @@ class Products {
 }
 
 class UI {
-  // question: how can products be accessed? isn't it blocked scope in the products class
+  // question: how can products be accessed? isn't it blocked scope in the products class? Ans: products is just a parameter of displayProducts🙄
   // display products from json file
   displayProducts(products) {
     let result = "";
@@ -76,6 +76,7 @@ class UI {
 class Storage {}
 
 document.addEventListener("DOMContentLoaded", () => {
+  // creating the new objects from the classes and methods above
   const ui = new UI();
   const products = new Products();
 
