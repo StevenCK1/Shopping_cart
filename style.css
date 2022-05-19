@@ -198,7 +198,7 @@ grid-template-columns
   transition: var(--mainTransition);
   background: rgb(240, 157, 81, 0.5);
   z-index: 2;
-  /* visibility: hidden; */
+  visibility: hidden;
 }
 .cart {
   position: fixed;
@@ -211,7 +211,7 @@ grid-template-columns
   background: rgb(231, 226, 221);
   padding: 1.5rem;
   transition: var(--mainTransition);
-  /* transform: translateX(100%); */
+  transform: translateX(100%);
 }
 .showCart {
   transform: translateX(0);
@@ -237,6 +237,12 @@ grid-template-columns
   margin-bottom: 2rem;
 }
 /*---------- Cart Item -------------------- */
+/*notes;
+grid-template-columns
+ - first auto is because the cart-item img has already been set at 75px, ie size fo the column
+ - second auto is for the width of the icon
+ - 1fr to take up whole width
+*/
 .cart-item {
   display: grid;
   align-items: center;
