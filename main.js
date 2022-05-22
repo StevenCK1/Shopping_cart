@@ -43,8 +43,7 @@ class Products {
 }
 
 class UI {
-  // question: how can products be accessed? isn't it blocked scope in the products class? Ans: products is just a parameter of displayProducts🙄
-  // display products from json file
+  // display products from json file and adds html for each element in the array
   displayProducts(products) {
     let result = "";
     products.forEach((product) => {
@@ -70,10 +69,21 @@ class UI {
     });
     productsDOM.innerHTML = result;
   }
+  getBagButtons() {
+    // use spread operator to destructure the array (nodelist)
+    const buttons = [...document.querySelectorAll(".bag-btn")];
+  }
 }
-
+// set up local storage for the browser to access since if refresh, items will disappear from cart
+// products in local for quick access, no need for asynchronous code
+// IMPORTANT!!! local storage is not ideal if there are thousands of products
 // Local storage
-class Storage {}
+class Storage {
+  static saveProducts(products) {
+    // The localStorage read-only property of the window interface allows you to access a Storage object for the Document's origin; the stored data is saved across browser sessions.
+    localStorage.setItem("products", JSON.stringify(products));
+  }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   // creating the new objects from the classes and methods above
@@ -81,5 +91,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const products = new Products();
 
   //get all products
-  products.getProducts().then((products) => ui.displayProducts(products)); // then method is chain to a promise, in order to call a function once the promise is fulfilled
+  products
+    .getProducts()
+    .then((products) => {
+      // then method is chain to a promise, in order to call a function once the promise is fulfilled
+      ui.displayProducts(products);
+      Storage.saveProducts(products);
+    })
+    .then(() => {
+      // chain again here because bag-btns will only be available for DOM once the page and all elements have been loaded
+
+      ui.getBagButtons();
+    });
 });
