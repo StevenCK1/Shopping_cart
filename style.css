@@ -140,7 +140,7 @@ grid-template-columns
 }
 .bag-btn {
   position: absolute;
-  top: 70%;
+  top: 70%; /*bag btn looks weird might need to change this*/
   right: 0;
   background: var(--primaryColor);
   border: none;

@@ -48,7 +48,6 @@ class UI {
     let result = "";
     products.forEach((product) => {
       result += `        
-      <!-- single line product -->
       <article class="product">
         <div class="img-container">
           <img
@@ -64,14 +63,33 @@ class UI {
           <h4>${product.price}</h4>
         </div>
       </article>
-      <!-- end of single line product -->
       `;
     });
     productsDOM.innerHTML = result;
   }
   getBagButtons() {
-    // use spread operator to destructure the array (nodelist)
+    // use spread operator to destructure the nodelist into an array
     const buttons = [...document.querySelectorAll(".bag-btn")];
+    buttons.forEach((button) => {
+      let id = button.dataset.id;
+      let inCart = cart.find((item) => item.id === id);
+      if (inCart) {
+        button.innerText = "In Cart";
+        button.disabled = true;
+      }
+      button.addEventListener("click", (event) => {
+        event.target.innerText = "In Cart";
+        event.target.disabled = true;
+
+        // get product from products
+        // add product to the cart
+        // save cart in local storage
+        // set cart values
+        // add cart values
+        // display cart item
+        // show cart
+      });
+    });
   }
 }
 // set up local storage for the browser to access since if refresh, items will disappear from cart
@@ -100,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then(() => {
       // chain again here because bag-btns will only be available for DOM once the page and all elements have been loaded
-
       ui.getBagButtons();
     });
 });
