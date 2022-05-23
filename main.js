@@ -12,6 +12,9 @@ const productsDOM = document.querySelector(".products-center");
 // Cart
 let cart = [];
 
+// buttons
+let buttonsDOM = [];
+
 /*
 class is a way to create new object without having to declare the same properties everytime
 */
@@ -70,6 +73,7 @@ class UI {
   getBagButtons() {
     // use spread operator to destructure the nodelist into an array
     const buttons = [...document.querySelectorAll(".bag-btn")];
+    buttonsDOM = buttons;
     buttons.forEach((button) => {
       let id = button.dataset.id;
       let inCart = cart.find((item) => item.id === id);
@@ -82,14 +86,92 @@ class UI {
         event.target.disabled = true;
 
         // get product from products
+        let cartItem = { ...Storage.getProduct(id), amount: 1 };
+
         // add product to the cart
+        cart = [...cart, cartItem];
+
         // save cart in local storage
+        Storage.saveCart(cart);
         // set cart values
-        // add cart values
+        this.setCartValues(cart);
         // display cart item
+        this.addCartItem(cartItem);
         // show cart
+        this.showCart();
       });
     });
+  }
+  setCartValues(cart) {
+    let tempTotal = 0;
+    let itemsTotal = 0;
+    cart.map((item) => {
+      tempTotal += item.price * item.amount;
+      itemsTotal += item.amount;
+    });
+    cartTotal.innerText = parseFloat(tempTotal.toFixed(2));
+    cartItems.innerText = itemsTotal;
+  }
+  addCartItem(item) {
+    const div = document.createElement("div");
+    div.classList.add("cart-item");
+    div.innerHTML = `<img src=${item.image} alt="product" />
+    <div>
+      <h4>${item.title}</h4>
+      <h5>$${item.price}</h5>
+      <span class="remove-item" data-id=${item.id}>remove</span>
+    </div>
+    <div>
+      <i class="fas fa-chevron-up" data-id=${item.id}></i>
+      <p class="item-amount">${item.amount}</p>
+      <i class="fas fa-chevron-down" data-id=${item.id}></i>
+    </div>`;
+    cartContent.appendChild(div);
+  }
+  showCart() {
+    cartOverlay.classList.add("transparentBcg");
+    cartDOM.classList.add("showCart");
+  }
+  setupApp() {
+    cart = Storage.getCart();
+    this.setCartValues(cart);
+    this.populateCart(cart);
+    cartBtn.addEventListener("click", this.showCart);
+    closeCartBtn.addEventListener("click", this.hideCart);
+  }
+  populateCart(cart) {
+    cart.forEach((item) => this.addCartItem(item));
+  }
+  hideCart() {
+    cartOverlay.classList.remove("transparentBcg");
+    cartDOM.classList.remove("showCart");
+  }
+  cartLogic() {
+    // clear cart button
+    clearCartBtn.addEventListener("click", () => {
+      this.clearCart();
+    });
+    // cart functionality
+  }
+  clearCart() {
+    let cartItems = cart.map((item) => item.id);
+    cartItems.forEach((id) => this.removeItem(id));
+    console.log(cartContent.children);
+    while (cartContent.children.length > 0) {
+      cartContent.removeChild(cartContent.children[0]);
+    }
+    this.hideCart();
+  }
+  removeItem(id) {
+    cart = cart.filter((item) => item.id !== id);
+    this.setCartValues(cart);
+    Storage.saveCart(cart);
+    let button = this.getSingleButton(id);
+    button.disabled = false;
+    button.innerHTML = `<i class="fas fa-shopping-cart></i>add to cart`;
+  }
+  getSingleButton(id) {
+    return buttonsDOM.find((button) => button.dataset.id === id);
   }
 }
 // set up local storage for the browser to access since if refresh, items will disappear from cart
@@ -101,6 +183,18 @@ class Storage {
     // The localStorage read-only property of the window interface allows you to access a Storage object for the Document's origin; the stored data is saved across browser sessions.
     localStorage.setItem("products", JSON.stringify(products));
   }
+  static getProduct(id) {
+    let products = JSON.parse(localStorage.getItem("products"));
+    return products.find((product) => product.id === id);
+  }
+  static saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+  static getCart() {
+    return localStorage.getItem("cart")
+      ? JSON.parse(localStorage.getItem("cart"))
+      : [];
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -108,6 +202,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const ui = new UI();
   const products = new Products();
 
+  //setup app
+  ui.setupApp();
   //get all products
   products
     .getProducts()
@@ -119,5 +215,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(() => {
       // chain again here because bag-btns will only be available for DOM once the page and all elements have been loaded
       ui.getBagButtons();
+      ui.cartLogic();
     });
 });
