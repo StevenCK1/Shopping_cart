@@ -6,6 +6,7 @@ Create a fictitious shopping website and add shopping cart using only vanilla Ja
 ## Things I have learned
 
 Learnt:
+
 *CSS*
 * CSS Grid to arrange various items in a grid (main difference with flexbox is that grid is 2 dimensional positioning and flexbox is 1 dimensional)
 * Flexbox: align-items(vertical) and justify-content(horizontal)
